@@ -10,11 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7bb608a61a3d6a4bb4c22080c196659, type: 3}
-  m_Name: WaterBiome
+  m_Name: PlaneBiome
   m_EditorClassIdentifier: 
   tileStructList:
-  - tile: {fileID: 11400000, guid: 946a2f09edec3034fbc62de22882abc1, type: 2}
-    chance: 1
-  minHeight: 0
+  - tile: {fileID: 11400000, guid: 71b80c7a431908d4ab5e16412b11a975, type: 2}
+    chance: 0.98
+  - tile: {fileID: 11400000, guid: dbbbdca9982f71b47bb6c10be306325d, type: 2}
+    chance: 0.02
+  minHeight: 0.2
   minMoisture: 0.5
-  minHeat: 0
+  minHeat: 0.2

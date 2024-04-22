@@ -10,7 +10,6 @@ namespace Data
     {
         [Header("General")]
         [SerializeField] private Vector2Int size;
-        [SerializeField] private Vector2 offset;
         [SerializeField] private float scale;
         [SerializeField] private List<BiomeSettings> biomes;
         
@@ -20,7 +19,6 @@ namespace Data
         [SerializeField] private List<NoiseWave> temperatureWaves;
 
         public Vector2Int Size => size;
-        public Vector2 Offset => offset;
         public float Scale => scale;
         public List<BiomeSettings> Biomes => biomes;
         public List<NoiseWave> HeightWaves => heightWaves;
@@ -31,7 +29,6 @@ namespace Data
     [Serializable]
     public struct NoiseWave
     {
-        public float seed;
         public float frequency;
         public float amplitude;
     }

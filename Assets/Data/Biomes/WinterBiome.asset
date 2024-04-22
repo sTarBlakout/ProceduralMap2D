@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7bb608a61a3d6a4bb4c22080c196659, type: 3}
   m_Name: WinterBiome
   m_EditorClassIdentifier: 
-  tile: {fileID: 11400000, guid: 7b29b5f8953ef96419abfd39edfa73b5, type: 2}
+  tileStructList:
+  - tile: {fileID: 11400000, guid: 7b29b5f8953ef96419abfd39edfa73b5, type: 2}
+    chance: 1
   minHeight: 0.2
   minMoisture: 0
   minHeat: 0
