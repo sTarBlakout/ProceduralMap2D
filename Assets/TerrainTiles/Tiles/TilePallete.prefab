@@ -304,7 +304,7 @@ GameObject:
   - component: {fileID: 4844482363191990845}
   - component: {fileID: 6179197838888244312}
   m_Layer: 31
-  m_Name: FreeSamplesHex
+  m_Name: TilePallete
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
