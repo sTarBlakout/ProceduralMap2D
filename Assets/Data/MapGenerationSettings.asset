@@ -23,10 +23,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: aac45caaaf790784484b0209c7fc82c7, type: 2}
   - {fileID: 11400000, guid: a1f19c91456d403429b87eff278f8296, type: 2}
   heightWaves:
-  - frequency: 0.05
+  - frequency: 0.04
     amplitude: 1
-  - frequency: 0.1
-    amplitude: 0.5
   moistureWaves:
   - frequency: 0.03
     amplitude: 1
