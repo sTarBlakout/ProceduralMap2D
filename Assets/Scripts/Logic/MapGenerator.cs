@@ -99,9 +99,10 @@ namespace Logic
                 currentTile = tile;
             }
 
+            var waterTile = settings.Biomes.First(biome => biome.Type == BiomeType.Water).GetTile();
             foreach (var tile in tilesToFillWithWater)
             {
-                tilemap.SetTile(new Vector3Int(tile.Coordinates.x, tile.Coordinates.y, 0), settings.Biomes.First(biome => biome.Type == BiomeType.Water).GetTile());
+                tilemap.SetTile(new Vector3Int(tile.Coordinates.x, tile.Coordinates.y, 0), waterTile);
             }
         }
 
@@ -111,26 +112,30 @@ namespace Logic
             if (tile.Coordinates.y % 2 == 0) // Even row
             {
                 adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x - 1, tile.Coordinates.y)); // West
-                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x, tile.Coordinates.y - 1)); // Northwest
-                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x, tile.Coordinates.y + 1)); // Southwest
+                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x - 1, tile.Coordinates.y + 1)); // Northwest
+                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x - 1, tile.Coordinates.y - 1)); // Southwest
                 adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x + 1, tile.Coordinates.y)); // East
-                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x + 1, tile.Coordinates.y - 1)); // Northeast
-                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x - 1, tile.Coordinates.y - 1)); // Southeast
+                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x, tile.Coordinates.y + 1)); // Northeast
+                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x, tile.Coordinates.y - 1)); // Southeast
             }
             else // Odd row
             {
                 adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x - 1, tile.Coordinates.y)); // West
-                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x - 1, tile.Coordinates.y + 1)); // Northwest
-                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x + 1, tile.Coordinates.y + 1)); // Southwest
-                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x, tile.Coordinates.y - 1)); // East
-                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x + 1, tile.Coordinates.y)); // Northeast
-                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x, tile.Coordinates.y + 1)); // Southeast
+                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x, tile.Coordinates.y + 1)); // Northwest
+                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x, tile.Coordinates.y - 1)); // Southwest
+                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x + 1, tile.Coordinates.y)); // East
+                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x + 1, tile.Coordinates.y + 1)); // Northeast
+                adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x + 1, tile.Coordinates.y - 1)); // Southeast
             }
 
             var adjacentTiles = new List<MapTile>();
             foreach (var coord in adjacentTilesCoords)
             {
-                if (coord.x >= settings.Size.x || coord.y >= settings.Size.y || coord.x < 0 || coord.y < 0) break;
+                if (coord.x >= settings.Size.x || coord.y >= settings.Size.y || coord.x < 0 || coord.y < 0)
+                {
+                    adjacentTiles.Clear();
+                    break;
+                }
                 adjacentTiles.Add(_generatedTiles[coord.x, coord.y]);
             }
             
