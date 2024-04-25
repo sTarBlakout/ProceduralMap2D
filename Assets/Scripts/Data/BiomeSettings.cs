@@ -10,10 +10,13 @@ namespace Data
     [CreateAssetMenu(fileName = "BiomeSettings", menuName = "Data/BiomeSettings")]
     public class BiomeSettings : ScriptableObject
     {
+        [SerializeField] private BiomeType type;
         [SerializeField] private List<TileChance> tileStructList;
         [SerializeField] private float minHeight;
         [SerializeField] private float minMoisture;
         [SerializeField] private float minHeat;
+
+        public BiomeType Type => type;
 
         public bool MatchCondition (float height, float moisture, float heat)
         {
@@ -43,6 +46,17 @@ namespace Data
 
             return chosenTile;
         }
+    }
+
+    public enum BiomeType
+    {
+        Water,
+        Mountain,
+        Forest,
+        Jungle,
+        Plain,
+        Desert,
+        Winter
     }
 
     [Serializable]

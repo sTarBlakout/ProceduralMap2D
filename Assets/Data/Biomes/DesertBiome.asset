@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7bb608a61a3d6a4bb4c22080c196659, type: 3}
   m_Name: DesertBiome
   m_EditorClassIdentifier: 
+  type: 5
   tileStructList:
   - tile: {fileID: 11400000, guid: b62249a4f94a80b4f8b4294c2e096f36, type: 2}
     chance: 1
-  minHeight: 0.2
+  minHeight: 0
   minMoisture: 0
-  minHeat: 0.5
+  minHeat: 0.7

@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7bb608a61a3d6a4bb4c22080c196659, type: 3}
   m_Name: JungleBiome
   m_EditorClassIdentifier: 
+  type: 3
   tileStructList:
   - tile: {fileID: 11400000, guid: 9fe82e7bc0a6d86449e7f59d0d9f92ba, type: 2}
     chance: 1
-  minHeight: 0.3
-  minMoisture: 0.5
-  minHeat: 0.6
+  minHeight: 0.1
+  minMoisture: 0.6
+  minHeat: 0.7

@@ -12,11 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7bb608a61a3d6a4bb4c22080c196659, type: 3}
   m_Name: MountainBiome
   m_EditorClassIdentifier: 
+  type: 1
   tileStructList:
   - tile: {fileID: 11400000, guid: ff318adc52d4b394787c29852a7e5873, type: 2}
     chance: 0.99
   - tile: {fileID: 11400000, guid: 985964a563fc7734cb95e8dddc03dde1, type: 2}
     chance: 0.01
-  minHeight: 0.5
+  minHeight: 0.8
   minMoisture: 0
   minHeat: 0

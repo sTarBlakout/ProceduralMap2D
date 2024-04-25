@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7bb608a61a3d6a4bb4c22080c196659, type: 3}
   m_Name: WaterBiome
   m_EditorClassIdentifier: 
+  type: 0
   tileStructList:
   - tile: {fileID: 11400000, guid: 946a2f09edec3034fbc62de22882abc1, type: 2}
     chance: 1
   minHeight: 0
-  minMoisture: 0
+  minMoisture: 0.75
   minHeat: 0
