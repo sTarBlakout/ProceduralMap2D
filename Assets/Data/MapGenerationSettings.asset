@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MapGenerationSettings
   m_EditorClassIdentifier: 
   size: {x: 60, y: 60}
-  scale: 2
+  scale: 1
   biomes:
   - {fileID: 11400000, guid: 6a902f688dbb29b40bdb4d4a2ca74b37, type: 2}
   - {fileID: 11400000, guid: f1452ff193a550d4da49476d47fa48a7, type: 2}
