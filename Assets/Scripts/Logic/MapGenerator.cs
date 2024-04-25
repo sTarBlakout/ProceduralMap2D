@@ -13,8 +13,7 @@ namespace Logic
         [SerializeField] private Grid grid;
         [SerializeField] private Tilemap tilemap;
         [SerializeField] private MapGenerationSettings settings;
-
-        private int _seed;
+        
         private MapTile[,] _generatedTiles;
 
         private void Start()
@@ -24,8 +23,6 @@ namespace Logic
 
         public void GenerateMap()
         {
-            _seed = DateTime.Now.Millisecond;
-
             var heightMap = GenerateNoise(settings.Size.x, settings.Size.y, settings.Scale, settings.HeightWaves);
             var moistureMap = GenerateNoise(settings.Size.x, settings.Size.y, settings.Scale, settings.MoistureWaves);
             var temperatureMap = GenerateNoise(settings.Size.x, settings.Size.y, settings.Scale, settings.TemperatureWaves);
@@ -38,7 +35,7 @@ namespace Logic
                 var biome = GetBiome(heightMap[x, y], moistureMap[x, y], temperatureMap[x, y]);
                 var tile = biome.GetTile();
                 tilemap.SetTile(new Vector3Int(x, y, 0), tile);
-                _generatedTiles[x, y] = new MapTile(biome.Type, x, y);
+                _generatedTiles[x, y] = new MapTile(biome.Type, x, y, biome.GetHeightForCell());
             }
 
             OffsetMapForCamera();
@@ -46,63 +43,60 @@ namespace Logic
         
         public void GenerateRivers()
         {
-            MapTile startTile;
-            // temp for debug purposes
             int amountOfRivers = 1;
-            int riverCount = 0;
-            
+            for (var i = 0; i < amountOfRivers; i++)
+            {
+                Random.InitState(DateTime.Now.Millisecond);
+                var borderWaterTileList = GetBorderWaterTiles();
+                if (borderWaterTileList.Count == 0)
+                {
+                    Debug.Log("No water bodies on map.");
+                    break;
+                }
+                GenerateRiver(borderWaterTileList[Random.Range(0, borderWaterTileList.Count)]);
+            }
+        }
+
+        private List<MapTile> GetBorderWaterTiles()
+        {
+            var borderWaterTileList = new List<MapTile>();
             for (int x = 0; x < settings.Size.x; x++)
             {
-                if (riverCount >= amountOfRivers) break;
                 for (int y = 0; y < settings.Size.y; y++)
                 {
                     if (_generatedTiles[x, y].BiomeType == BiomeType.Water)
                     {
                         if (GetAdjacentTiles(_generatedTiles[x, y]).All(tile => tile.BiomeType == BiomeType.Water)) continue;
-                        startTile = _generatedTiles[x, y];
-                        GenerateRiver(startTile);
-                        riverCount++;
-                        if (riverCount >= amountOfRivers) break;
+                        borderWaterTileList.Add(_generatedTiles[x, y]);
                     }
                 }
             }
+
+            return borderWaterTileList;
         }
 
         private void GenerateRiver(MapTile startTile)
         {
             MapTile currentTile = startTile;
-            MapTile previousTile = null;
             List<MapTile> previousAdjacentTiles = default;
             
             var tilesToFillWithWater = new List<MapTile>();
-            var maxLengthLimit = 1000;
-            var lengthCount = 0;
 
-            while (lengthCount < maxLengthLimit)
+            while (true)
             {
                 var adjacentTiles = GetAdjacentTiles(currentTile);
                 if (previousAdjacentTiles != null) adjacentTiles.RemoveAll(tile => previousAdjacentTiles.Contains(tile));
                 adjacentTiles.RemoveAll(tile => tilesToFillWithWater.Contains(tile) || tile.BiomeType == BiomeType.Water);
-                if (adjacentTiles.Count == 0) break;
-                var lowestNeighbour = adjacentTiles[0];
-                    
-                foreach (var neighbour in adjacentTiles)
-                {
-                    if (Random.value > 0.5)
-                    {
-                        lowestNeighbour = neighbour;
-                        break;
-                    }
-                }
                 
-                var tile = _generatedTiles[lowestNeighbour.Coordinates.x, lowestNeighbour.Coordinates.y];
+                if (adjacentTiles.Count == 0) break;
+                var chosenNeighbour = adjacentTiles.OrderByDescending(tile => tile.Height).ToList()[0];
+                
+                var tile = _generatedTiles[chosenNeighbour.Coordinates.x, chosenNeighbour.Coordinates.y];
                 if (tile.BiomeType == BiomeType.Mountain) break;
 
                 tilesToFillWithWater.Add(tile);
-                previousTile = currentTile;
                 previousAdjacentTiles = adjacentTiles;
                 currentTile = tile;
-                lengthCount++;
             }
 
             foreach (var tile in tilesToFillWithWater)
@@ -114,7 +108,6 @@ namespace Logic
         private List<MapTile> GetAdjacentTiles(MapTile tile)
         {
             var adjacentTilesCoords = new List<Vector2Int>();
-            
             if (tile.Coordinates.y % 2 == 0) // Even row
             {
                 adjacentTilesCoords.Add(new Vector2Int(tile.Coordinates.x - 1, tile.Coordinates.y)); // West
@@ -137,7 +130,7 @@ namespace Logic
             var adjacentTiles = new List<MapTile>();
             foreach (var coord in adjacentTilesCoords)
             {
-                if (coord.x >= settings.Size.x || coord.y >= settings.Size.y || coord.x < 0 || coord.y < 0) continue;
+                if (coord.x >= settings.Size.x || coord.y >= settings.Size.y || coord.x < 0 || coord.y < 0) break;
                 adjacentTiles.Add(_generatedTiles[coord.x, coord.y]);
             }
             
@@ -152,6 +145,7 @@ namespace Logic
 
         private float[,] GenerateNoise(int width, int height, float scale, List<NoiseWave> waves)
         {
+            var seed = DateTime.Now.Millisecond;
             var noiseMap = new float[width, height];
             for(var x = 0; x < width; ++x)
             {
@@ -163,7 +157,7 @@ namespace Logic
                     var normalization = 0.0f;
                     foreach(var wave in waves)
                     {
-                        noiseMap[x, y] += wave.amplitude * Mathf.PerlinNoise(samplePosX * wave.frequency + _seed, samplePosY * wave.frequency + _seed);
+                        noiseMap[x, y] += wave.amplitude * Mathf.PerlinNoise(samplePosX * wave.frequency + seed, samplePosY * wave.frequency + seed);
                         normalization += wave.amplitude;
                     }
                     noiseMap[x, y] /= normalization;

@@ -46,6 +46,11 @@ namespace Data
 
             return chosenTile;
         }
+
+        public float GetHeightForCell()
+        {
+            return Mathf.Clamp01(minHeight + Random.Range(0, 0.1f));
+        }
     }
 
     public enum BiomeType
