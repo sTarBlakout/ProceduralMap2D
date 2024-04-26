@@ -527,7 +527,7 @@ GameObject:
   - component: {fileID: 804214707}
   - component: {fileID: 804214706}
   m_Layer: 5
-  m_Name: GenerateAll
+  m_Name: GenerateMapButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -599,7 +599,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1709890155}
         m_TargetAssemblyTypeName: Logic.MapGenerator, Assembly-CSharp
-        m_MethodName: GenerateAll
+        m_MethodName: GenerateMap
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -944,7 +944,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1709890155}
         m_TargetAssemblyTypeName: Logic.MapGenerator, Assembly-CSharp
-        m_MethodName: GenerateMap
+        m_MethodName: GenerateTerrain
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -1123,7 +1123,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Generate All
+  m_Text: Generate Map
 --- !u!222 &1741665167
 CanvasRenderer:
   m_ObjectHideFlags: 0

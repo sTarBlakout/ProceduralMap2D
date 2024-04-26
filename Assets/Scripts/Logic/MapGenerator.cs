@@ -15,21 +15,24 @@ namespace Logic
         [SerializeField] private MapGenerationSettings settings;
         
         private MapTile[,] _generatedTiles;
-        private List<MapTile> _riverTiles = new ();
+        private readonly List<MapTile> _riverTiles = new ();
 
         private void Start()
         {
-            GenerateAll();
-        }
-
-        public void GenerateAll()
-        {
             GenerateMap();
-            GenerateRivers();
         }
 
         public void GenerateMap()
         {
+            GenerateTerrain();
+            GenerateRivers();
+        }
+
+        #region Terrain Generation
+        
+        public void GenerateTerrain()
+        {
+            _riverTiles.Clear();
             var heightMap = GenerateNoise(settings.Size.x, settings.Size.y, settings.Scale, settings.HeightWaves);
             var moistureMap = GenerateNoise(settings.Size.x, settings.Size.y, settings.Scale, settings.MoistureWaves);
             var temperatureMap = GenerateNoise(settings.Size.x, settings.Size.y, settings.Scale, settings.TemperatureWaves);
@@ -47,6 +50,77 @@ namespace Logic
 
             OffsetMapForCamera();
         }
+        
+        private void OffsetMapForCamera()
+        {
+            if (Camera.main != null) Camera.main.orthographicSize = settings.Size.x;
+            var cellSize = grid.cellSize;
+            tilemap.transform.position = new Vector3(-cellSize.x * settings.Size.x / 2, -cellSize.y * settings.Size.y / 3, 0);
+        }
+
+        private float[,] GenerateNoise(int width, int height, float scale, List<NoiseWave> waves)
+        {
+            var seed = DateTime.Now.Millisecond;
+            var noiseMap = new float[width, height];
+            for(var x = 0; x < width; ++x)
+            {
+                for(var y = 0; y < height; ++y)
+                {
+                    var samplePosX = x * scale;
+                    var samplePosY = y * scale;
+                    
+                    var normalization = 0.0f;
+                    foreach(var wave in waves)
+                    {
+                        noiseMap[x, y] += wave.amplitude * Mathf.PerlinNoise(samplePosX * wave.frequency + seed, samplePosY * wave.frequency + seed);
+                        normalization += wave.amplitude;
+                    }
+                    noiseMap[x, y] /= normalization;
+                }
+            }
+        
+            return noiseMap;
+        }
+        
+        private BiomeSettings GetBiome(float height, float moisture, float heat)
+        {
+            var biomeTempList = new List<BiomeSettings>();
+            foreach(var biome in settings.Biomes)
+            {
+                if(biome.MatchCondition(height, moisture, heat))
+                {
+                    biomeTempList.Add(biome);                
+                }
+            }
+
+            var curVal = 0.0f;
+            BiomeSettings biomeToReturn = null;
+            foreach(var biome in biomeTempList)
+            {
+                if (biomeToReturn == null)
+                {
+                    biomeToReturn = biome;
+                    curVal = biome.GetDifference(height, moisture, heat);
+                }
+                else
+                {
+                    if (biome.GetDifference(height, moisture, heat) < curVal)
+                    {
+                        biomeToReturn = biome;
+                        curVal = biome.GetDifference(height, moisture, heat);
+                    }
+                }
+            }
+            
+            if(biomeToReturn == null)
+                biomeToReturn = settings.Biomes[0];
+            
+            return biomeToReturn;
+        }
+        
+        #endregion
+ 
+        #region River Generation
         
         public void GenerateRivers()
         {
@@ -159,71 +233,7 @@ namespace Logic
             
             return adjacentTiles;
         }
-
-        private void OffsetMapForCamera()
-        {
-            if (Camera.main != null) Camera.main.orthographicSize = settings.Size.x;
-            tilemap.transform.position = new Vector3(-grid.cellSize.x * settings.Size.x / 2, -grid.cellSize.y * settings.Size.y / 3, 0);
-        }
-
-        private float[,] GenerateNoise(int width, int height, float scale, List<NoiseWave> waves)
-        {
-            var seed = DateTime.Now.Millisecond;
-            var noiseMap = new float[width, height];
-            for(var x = 0; x < width; ++x)
-            {
-                for(var y = 0; y < height; ++y)
-                {
-                    var samplePosX = x * scale;
-                    var samplePosY = y * scale;
-                    
-                    var normalization = 0.0f;
-                    foreach(var wave in waves)
-                    {
-                        noiseMap[x, y] += wave.amplitude * Mathf.PerlinNoise(samplePosX * wave.frequency + seed, samplePosY * wave.frequency + seed);
-                        normalization += wave.amplitude;
-                    }
-                    noiseMap[x, y] /= normalization;
-                }
-            }
         
-            return noiseMap;
-        }
-        
-        private BiomeSettings GetBiome(float height, float moisture, float heat)
-        {
-            var biomeTempList = new List<BiomeSettings>();
-            foreach(var biome in settings.Biomes)
-            {
-                if(biome.MatchCondition(height, moisture, heat))
-                {
-                    biomeTempList.Add(biome);                
-                }
-            }
-
-            var curVal = 0.0f;
-            BiomeSettings biomeToReturn = null;
-            foreach(var biome in biomeTempList)
-            {
-                if (biomeToReturn == null)
-                {
-                    biomeToReturn = biome;
-                    curVal = biome.GetDifference(height, moisture, heat);
-                }
-                else
-                {
-                    if (biome.GetDifference(height, moisture, heat) < curVal)
-                    {
-                        biomeToReturn = biome;
-                        curVal = biome.GetDifference(height, moisture, heat);
-                    }
-                }
-            }
-            
-            if(biomeToReturn == null)
-                biomeToReturn = settings.Biomes[0];
-            
-            return biomeToReturn;
-        }
+        #endregion
     }
 }

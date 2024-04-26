@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: MapGenerationSettings
   m_EditorClassIdentifier: 
   size: {x: 60, y: 60}
-  scale: 1
+  scale: 1.5
   biomes:
   - {fileID: 11400000, guid: 6a902f688dbb29b40bdb4d4a2ca74b37, type: 2}
   - {fileID: 11400000, guid: f1452ff193a550d4da49476d47fa48a7, type: 2}
@@ -22,7 +22,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 52b607e91917f784180738a0228a3c59, type: 2}
   - {fileID: 11400000, guid: aac45caaaf790784484b0209c7fc82c7, type: 2}
   - {fileID: 11400000, guid: a1f19c91456d403429b87eff278f8296, type: 2}
-  maxRiversAmount: 5
+  maxRiversAmount: 7
   heightWaves:
   - frequency: 0.04
     amplitude: 1
