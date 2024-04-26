@@ -17,5 +17,5 @@ MonoBehaviour:
   - tile: {fileID: 11400000, guid: 946a2f09edec3034fbc62de22882abc1, type: 2}
     chance: 1
   minHeight: 0
-  minMoisture: 0.75
+  minMoisture: 0.7
   minHeat: 0

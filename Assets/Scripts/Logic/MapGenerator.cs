@@ -15,10 +15,17 @@ namespace Logic
         [SerializeField] private MapGenerationSettings settings;
         
         private MapTile[,] _generatedTiles;
+        private List<MapTile> _riverTiles = new ();
 
         private void Start()
         {
+            GenerateAll();
+        }
+
+        public void GenerateAll()
+        {
             GenerateMap();
+            GenerateRivers();
         }
 
         public void GenerateMap()
@@ -43,16 +50,17 @@ namespace Logic
         
         public void GenerateRivers()
         {
-            int amountOfRivers = 1;
-            for (var i = 0; i < amountOfRivers; i++)
+            Random.InitState(DateTime.Now.Millisecond);
+            for (var i = 0; i < settings.MaxRiversAmount; i++)
             {
-                Random.InitState(DateTime.Now.Millisecond);
                 var borderWaterTileList = GetBorderWaterTiles();
                 if (borderWaterTileList.Count == 0)
                 {
-                    Debug.Log("No water bodies on map.");
+                    Debug.Log("Can't generate rivers, because no water bodies on map.");
                     break;
                 }
+
+                
                 GenerateRiver(borderWaterTileList[Random.Range(0, borderWaterTileList.Count)]);
             }
         }
@@ -66,7 +74,7 @@ namespace Logic
                 {
                     if (_generatedTiles[x, y].BiomeType == BiomeType.Water)
                     {
-                        if (GetAdjacentTiles(_generatedTiles[x, y]).All(tile => tile.BiomeType == BiomeType.Water)) continue;
+                        if (GetAdjacentTiles(_generatedTiles[x, y]).Count(tile => tile.BiomeType == BiomeType.Water) > 3) continue;
                         borderWaterTileList.Add(_generatedTiles[x, y]);
                     }
                 }
@@ -78,39 +86,42 @@ namespace Logic
         private void GenerateRiver(MapTile startTile)
         {
             MapTile currentTile = startTile;
-            var previousAdjacentTiles = new List<MapTile>();
             var tilesToFillWithWater = new List<MapTile>();
 
             while (true)
             {
                 var adjacentTiles = GetAdjacentTiles(currentTile);
-                adjacentTiles.RemoveAll(tile => tilesToFillWithWater.Contains(tile) || tile.BiomeType == BiomeType.Water || previousAdjacentTiles.Contains(tile));
-
-                MapTile chosenNeighbour;
-                if (adjacentTiles.Count == 0)
-                {
-                    // Think about this one
-                    break;
-                }
-                else
-                {
-                    chosenNeighbour = adjacentTiles.OrderByDescending(tile => tile.Height).ToList()[0];
-                }
+                adjacentTiles.RemoveAll(tile => tilesToFillWithWater.Contains(tile) || tile.BiomeType == BiomeType.Water || _riverTiles.Contains(tile));
                 
+                if (adjacentTiles.Count == 0) break;
+                
+                var chosenNeighbour = adjacentTiles.OrderByDescending(tile => tile.Height).ToList()[0];
                 var tile = _generatedTiles[chosenNeighbour.Coordinates.x, chosenNeighbour.Coordinates.y];
                 if (tile.BiomeType == BiomeType.Mountain) break;
 
-                tilesToFillWithWater.AddRange(adjacentTiles);
-                previousAdjacentTiles.AddRange(adjacentTiles.Where(t=> !previousAdjacentTiles.Contains(t)));
+                tilesToFillWithWater.Add(chosenNeighbour);
+                tilesToFillWithWater.AddRange(GetRandomTiles(adjacentTiles, Random.Range(0, Mathf.RoundToInt(4 / settings.Scale))));
+                _riverTiles.AddRange(adjacentTiles.Where(t=> !_riverTiles.Contains(t)));
                 currentTile = tile;
             }
 
             var waterTile = settings.Biomes.First(biome => biome.Type == BiomeType.Water).GetTile();
-            // And think here
             foreach (var tile in tilesToFillWithWater)
             {
                 tilemap.SetTile(new Vector3Int(tile.Coordinates.x, tile.Coordinates.y, 0), waterTile);
             }
+        }
+        
+        private List<MapTile> GetRandomTiles(List<MapTile> list, int count)
+        {
+            var randomValues = new List<MapTile>();
+            for (var i = 0; i < count; i++)
+            {
+                var randomIndex = Random.Range(0, list.Count);
+                randomValues.Add(list[randomIndex]);
+            }
+
+            return randomValues;
         }
 
         private List<MapTile> GetAdjacentTiles(MapTile tile)

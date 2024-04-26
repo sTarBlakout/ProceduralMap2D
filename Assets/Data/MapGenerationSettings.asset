@@ -22,6 +22,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 52b607e91917f784180738a0228a3c59, type: 2}
   - {fileID: 11400000, guid: aac45caaaf790784484b0209c7fc82c7, type: 2}
   - {fileID: 11400000, guid: a1f19c91456d403429b87eff278f8296, type: 2}
+  maxRiversAmount: 5
   heightWaves:
   - frequency: 0.04
     amplitude: 1

@@ -12,6 +12,7 @@ namespace Data
         [SerializeField] private Vector2Int size;
         [SerializeField] private float scale;
         [SerializeField] private List<BiomeSettings> biomes;
+        [SerializeField] private int maxRiversAmount;
         
         [Header("Waves")]
         [SerializeField] private List<NoiseWave> heightWaves;
@@ -20,6 +21,7 @@ namespace Data
 
         public Vector2Int Size => size;
         public float Scale => scale;
+        public int MaxRiversAmount => maxRiversAmount;
         public List<BiomeSettings> Biomes => biomes;
         public List<NoiseWave> HeightWaves => heightWaves;
         public List<NoiseWave> MoistureWaves => moistureWaves;
